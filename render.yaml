@@ -1,0 +1,95 @@
+# LexusMail Production Deployment Blueprint for Render.com
+# Reference: https://render.com/docs/blueprint-spec
+
+version: "1"
+
+services:
+  # 1. Primary Web Service (Node.js API + React Static SPA)
+  - type: web
+    name: lexusmail-web
+    runtime: node
+    plan: starter
+    region: oregon
+    branch: main
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: APP_URL
+        sync: false # Set to your live Render URL, e.g. https://lexusmail.onrender.com
+      - key: DATABASE_URL
+        fromDatabase:
+          name: lexusmail-db
+          property: connectionString
+      - key: DATABASE_SSL
+        value: "true"
+      - key: JWT_SECRET
+        generateValue: true
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: STORAGE_PROVIDER
+        value: google_drive
+      - key: GOOGLE_SERVICE_ACCOUNT_JSON
+        sync: false # Paste raw JSON or upload as a Render Secret File
+      - key: GOOGLE_DRIVE_SHARED_DRIVE_ID
+        sync: false # Optional Shared Drive ID
+      - key: GOOGLE_DRIVE_ROOT_FOLDER
+        value: LexusMail
+      - key: EMAIL_PROVIDER
+        value: console # 'resend' | 'sendgrid' | 'smtp' | 'console'
+      - key: EMAIL_API_KEY
+        sync: false
+      - key: EMAIL_FROM
+        value: LexusMail <transfers@lexusmail.com>
+      - key: MAX_UPLOAD_SIZE_BYTES
+        value: "5368709120" # 5 GB
+      - key: MAX_FILES_PER_TRANSFER
+        value: "100"
+      - key: DEFAULT_EXPIRATION_DAYS
+        value: "7"
+      - key: MAX_EXPIRATION_DAYS
+        value: "30"
+      - key: ALLOW_GUEST_TRANSFERS
+        value: "true"
+
+  # 2. Background Worker Service (Expired Files Purge & Email Notifications)
+  - type: worker
+    name: lexusmail-worker
+    runtime: node
+    plan: starter
+    region: oregon
+    branch: main
+    buildCommand: cd server && npm install && npm run build
+    startCommand: cd server && npm run worker:prod
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: lexusmail-db
+          property: connectionString
+      - key: DATABASE_SSL
+        value: "true"
+      - key: STORAGE_PROVIDER
+        value: google_drive
+      - key: GOOGLE_SERVICE_ACCOUNT_JSON
+        sync: false
+      - key: GOOGLE_DRIVE_SHARED_DRIVE_ID
+        sync: false
+      - key: GOOGLE_DRIVE_ROOT_FOLDER
+        value: LexusMail
+
+databases:
+  # 3. Persistent Managed PostgreSQL Database
+  - name: lexusmail-db
+    plan: starter
+    region: oregon
+    databaseName: lexusmail
+    user: lexusmail_admin
+    postgresMajorVersion: "16"

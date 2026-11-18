@@ -1,0 +1,162 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "LexusMail API",
+    "version": "1.0.0",
+    "description": "Production REST API for LexusMail enterprise large-file transfer and cloud sharing platform."
+  },
+  "servers": [
+    {
+      "url": "/api",
+      "description": "LexusMail API Server"
+    }
+  ],
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "summary": "Register new user account",
+        "tags": ["Authentication"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "email", "password"],
+                "properties": {
+                  "name": { "type": "string" },
+                  "email": { "type": "string", "format": "email" },
+                  "password": { "type": "string", "minLength": 8 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Account created successfully" },
+          "400": { "description": "Validation error" }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "Authenticate user",
+        "tags": ["Authentication"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": { "type": "string", "format": "email" },
+                  "password": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "JWT authentication token" },
+          "401": { "description": "Invalid credentials" }
+        }
+      }
+    },
+    "/transfers/init": {
+      "post": {
+        "summary": "Initialize new file transfer session",
+        "tags": ["Transfers"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["senderEmail", "files"],
+                "properties": {
+                  "type": { "type": "string", "enum": ["email", "link"] },
+                  "senderEmail": { "type": "string", "format": "email" },
+                  "recipientEmails": { "type": "array", "items": { "type": "string" } },
+                  "title": { "type": "string" },
+                  "message": { "type": "string" },
+                  "password": { "type": "string" },
+                  "expiresInDays": { "type": "integer" },
+                  "maxDownloads": { "type": "integer" },
+                  "files": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": ["filename", "size"],
+                      "properties": {
+                        "filename": { "type": "string" },
+                        "size": { "type": "integer" },
+                        "mimeType": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Transfer initialized with upload session tokens" }
+        }
+      }
+    },
+    "/uploads/init-file": {
+      "post": {
+        "summary": "Initialize resumable cloud upload session for a file",
+        "tags": ["Uploads"],
+        "responses": {
+          "200": { "description": "Resumable session URL created" }
+        }
+      }
+    },
+    "/uploads/{sessionId}/chunk": {
+      "put": {
+        "summary": "Stream binary byte chunk to storage provider",
+        "tags": ["Uploads"],
+        "parameters": [
+          { "name": "sessionId", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "Content-Range", "in": "header", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Chunk saved, file finished or continuing" }
+        }
+      }
+    },
+    "/download/{token}": {
+      "get": {
+        "summary": "Get transfer metadata for download landing page",
+        "tags": ["Downloads"],
+        "parameters": [
+          { "name": "token", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Transfer details and file list" }
+        }
+      }
+    },
+    "/download/{token}/files/{fileId}": {
+      "get": {
+        "summary": "Download single file stream with range support",
+        "tags": ["Downloads"],
+        "responses": {
+          "200": { "description": "File binary stream" },
+          "206": { "description": "Partial byte range stream" }
+        }
+      }
+    },
+    "/download/{token}/archive": {
+      "get": {
+        "summary": "Download all transfer files as dynamic streaming ZIP",
+        "tags": ["Downloads"],
+        "responses": {
+          "200": { "description": "Streaming ZIP archive binary stream" }
+        }
+      }
+    }
+  }
+}
