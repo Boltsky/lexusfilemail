@@ -141,7 +141,9 @@ export const DownloadPage: React.FC = () => {
           <div className="text-center">
             <h2 className="text-xl font-extrabold text-slate-900">Password Protected Transfer</h2>
             <p className="text-xs text-slate-500 mt-1">
-              {transfer.senderEmail} has protected this transfer package with a security password.
+              {transfer.senderEmail && transfer.senderEmail !== 'guest@lexusicd.com' && transfer.senderEmail !== 'guest@lexusmail.com'
+                ? `${transfer.senderEmail} has protected this transfer package with a security password.`
+                : 'This transfer package is protected with a security password.'}
             </p>
           </div>
 
@@ -206,7 +208,9 @@ export const DownloadPage: React.FC = () => {
                 {transfer.title || 'Files Ready for Download'}
               </h1>
               <p className="text-xs text-white/80">
-                Sent by <span className="font-semibold text-white">{transfer.senderEmail}</span>
+                {transfer.senderEmail && transfer.senderEmail !== 'guest@lexusicd.com' && transfer.senderEmail !== 'guest@lexusmail.com'
+                  ? <>Sent by <span className="font-semibold text-white">{transfer.senderEmail}</span></>
+                  : <>Shared via <span className="font-semibold text-white">Lexus ICD</span></>}
               </p>
             </div>
 

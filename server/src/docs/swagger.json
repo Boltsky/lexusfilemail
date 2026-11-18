@@ -1,14 +1,14 @@
 {
   "openapi": "3.0.3",
   "info": {
-    "title": "LexusMail API",
+    "title": "Lexus ICD API",
     "version": "1.0.0",
-    "description": "Production REST API for LexusMail enterprise large-file transfer and cloud sharing platform."
+    "description": "Production REST API for Lexus ICD enterprise large-file transfer and cloud sharing platform."
   },
   "servers": [
     {
       "url": "/api",
-      "description": "LexusMail API Server"
+      "description": "Lexus ICD API Server"
     }
   ],
   "paths": {

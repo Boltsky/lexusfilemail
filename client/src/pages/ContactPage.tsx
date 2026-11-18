@@ -17,16 +17,16 @@ export const ContactPage: React.FC = () => {
 
   const faqs = [
     {
-      q: 'How large of a file can I send with LexusMail?',
+      q: 'How large of a file can I send with Lexus ICD?',
       a: 'Free guest transfers support up to 5 GB per transfer session. Pro users can send up to 250 GB per transfer, while Business/Enterprise plans support unlimited file sizes.',
     },
     {
-      q: 'Does the recipient need a LexusMail account to download files?',
+      q: 'Does the recipient need a Lexus ICD account to download files?',
       a: 'No! Recipients simply click the download link and can download individual files or the complete streaming ZIP archive instantly with zero registration or software installation required.',
     },
     {
       q: 'How does Google Drive storage integration work?',
-      a: 'LexusMail orchestrates resumable chunked upload sessions directly into dedicated Google Drive cloud folders. Files are kept strictly private and accessed only through encrypted, rate-limited backend streaming proxies.',
+      a: 'Lexus ICD orchestrates resumable chunked upload sessions directly into dedicated Google Drive cloud folders. Files are kept strictly private and accessed only through encrypted, rate-limited backend streaming proxies.',
     },
     {
       q: 'What happens when a transfer reaches its expiration date?',
@@ -34,7 +34,7 @@ export const ContactPage: React.FC = () => {
     },
     {
       q: 'What is dynamic ZIP streaming?',
-      a: 'Instead of spending minutes creating a multi-gigabyte ZIP file on the server disk before downloading, LexusMail compresses and streams files on-the-fly directly to the recipient’s browser as packets arrive from Google Drive.',
+      a: 'Instead of spending minutes creating a multi-gigabyte ZIP file on the server disk before downloading, Lexus ICD compresses and streams files on-the-fly directly to the recipient’s browser as packets arrive from Google Drive.',
     },
   ];
 

@@ -175,7 +175,7 @@ export const TransferCard: React.FC = () => {
       // Step 1: Initialize transfer on backend
       const payload = {
         type: transferMode,
-        senderEmail: senderEmail.trim() || user?.email || 'guest@lexusmail.com',
+        senderEmail: transferMode === 'email' ? senderEmail.trim() : (user?.email || 'guest@lexusicd.com'),
         recipientEmails: parsedRecipients,
         title: title.trim() || undefined,
         message: message.trim() || undefined,
@@ -380,7 +380,7 @@ export const TransferCard: React.FC = () => {
 
           {/* Input Fields */}
           <div className="space-y-4">
-            {transferMode === 'email' ? (
+            {transferMode === 'email' && (
               <>
                 <div>
                   <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">
@@ -410,19 +410,6 @@ export const TransferCard: React.FC = () => {
                   />
                 </div>
               </>
-            ) : (
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">
-                  Your Email (Optional)
-                </label>
-                <input
-                  type="email"
-                  placeholder="name@domain.com (optional, for notifications)"
-                  value={senderEmail}
-                  onChange={(e) => setSenderEmail(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent text-sm bg-slate-50/30 text-slate-900 transition-all placeholder:text-slate-400"
-                />
-              </div>
             )}
 
             <div>

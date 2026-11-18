@@ -16,7 +16,7 @@ const fileItemSchema = z.object({
 
 const initTransferSchema = z.object({
   type: z.enum(['email', 'link']).default('link'),
-  senderEmail: z.string().email().optional().default('guest@lexusmail.com'),
+  senderEmail: z.string().email().optional().default('guest@lexusicd.com'),
   recipientEmails: z.array(z.string().email()).optional().default([]),
   title: z.string().max(255).optional(),
   message: z.string().max(4000).optional(),

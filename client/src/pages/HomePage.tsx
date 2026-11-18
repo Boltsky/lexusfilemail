@@ -79,7 +79,7 @@ export const HomePage: React.FC = () => {
             Built for Creative Teams, Studios & Enterprises
           </p>
           <p className="text-sm text-slate-600">
-            LexusMail eliminates file size roadblocks and network hiccups with dedicated cloud streaming.
+            Lexus ICD eliminates file size roadblocks and network hiccups with dedicated cloud streaming.
           </p>
         </div>
 
@@ -126,10 +126,10 @@ export const HomePage: React.FC = () => {
             </div>
             <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
               Standard email caps attachments at 25 MB. <br />
-              <span className="text-sky-400">LexusMail handles up to 250,000 MB.</span>
+              <span className="text-sky-400">Lexus ICD handles up to 250,000 MB.</span>
             </h2>
             <p className="text-sm text-slate-300 leading-relaxed">
-              Never worry about rejected email attachments, bounced mailboxes, or slow client downloads. Whether sending 4K RAW video, sound stems, architectural blueprints, or multi-gigabyte software builds, LexusMail delivers reliably every time.
+              Never worry about rejected email attachments, bounced mailboxes, or slow client downloads. Whether sending 4K RAW video, sound stems, architectural blueprints, or multi-gigabyte software builds, Lexus ICD delivers reliably every time.
             </p>
             <div className="pt-2">
               <Link

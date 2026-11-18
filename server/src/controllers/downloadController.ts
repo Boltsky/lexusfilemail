@@ -74,7 +74,7 @@ export class DownloadController {
           success: true,
           transfer: {
             requiresPassword: true,
-            title: transfer.title || 'LexusMail File Transfer',
+            title: transfer.title || 'Lexus ICD File Transfer',
             senderEmail: transfer.sender_email,
             fileCount: transfer.file_count,
             totalSizeBytes: parseInt(transfer.total_size_bytes, 10),
@@ -95,7 +95,7 @@ export class DownloadController {
         transfer: {
           id: transfer.id,
           requiresPassword: false,
-          title: transfer.title || 'LexusMail File Transfer',
+          title: transfer.title || 'Lexus ICD File Transfer',
           message: transfer.message,
           senderEmail: transfer.sender_email,
           fileCount: transfer.file_count,

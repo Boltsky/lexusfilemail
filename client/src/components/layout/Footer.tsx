@@ -9,16 +9,15 @@ export const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand Info */}
           <div className="space-y-4 md:col-span-1">
-            <Link to="/" className="flex items-center gap-2 text-white">
-              <div className="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center text-white">
-                <Send className="w-4 h-4 -rotate-12 translate-x-0.5" />
-              </div>
-              <span className="text-lg font-bold tracking-tight">
-                Lexus<span className="text-brand-400">Mail</span>
-              </span>
+            <Link to="/" className="inline-block bg-white px-3 py-1.5 rounded-xl shadow-sm">
+              <img
+                src="/lexus-icd-logo.png"
+                alt="Lexus ICD"
+                className="h-8 w-auto object-contain"
+              />
             </Link>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Enterprise-grade large file transfers with resilient Google Drive cloud storage, dynamic ZIP streaming, and zero-trust download security.
+              Enterprise large file transfers with resilient Google Drive cloud storage, dynamic ZIP streaming, and zero-trust download security.
             </p>
             <div className="flex items-center gap-2 text-xs text-emerald-400 font-medium">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -86,7 +85,7 @@ export const Footer: React.FC = () => {
         </div>
 
         <div className="border-t border-slate-800 mt-10 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs">
-          <p>© {new Date().getFullYear()} LexusMail. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Lexus ICD. All rights reserved.</p>
           <p className="text-slate-500">
             Engineered for high-volume, reliable large file distribution.
           </p>

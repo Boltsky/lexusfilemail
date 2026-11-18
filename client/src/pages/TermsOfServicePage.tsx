@@ -19,7 +19,7 @@ export const TermsOfServicePage: React.FC = () => {
         <section className="space-y-2">
           <h2 className="text-base font-bold text-slate-900">1. Acceptance of Terms</h2>
           <p>
-            By using LexusMail ("Platform"), whether as an unauthenticated guest, registered user, or recipient downloading files, you agree to comply with and be legally bound by these Terms of Service.
+            By using Lexus ICD ("Platform"), whether as an unauthenticated guest, registered user, or recipient downloading files, you agree to comply with and be legally bound by these Terms of Service.
           </p>
         </section>
 
@@ -39,14 +39,14 @@ export const TermsOfServicePage: React.FC = () => {
         <section className="space-y-2">
           <h2 className="text-base font-bold text-slate-900">3. Storage Lifespan & Service Boundaries</h2>
           <p>
-            LexusMail is a file transfer and distribution utility, not a permanent backup service. All transfers have an expiration date after which all data is permanently destroyed. Users are solely responsible for maintaining local copies and primary backups of all transferred materials.
+            Lexus ICD is a file transfer and distribution utility, not a permanent backup service. All transfers have an expiration date after which all data is permanently destroyed. Users are solely responsible for maintaining local copies and primary backups of all transferred materials.
           </p>
         </section>
 
         <section className="space-y-2">
           <h2 className="text-base font-bold text-slate-900">4. Disclaimer of Warranties & Limitation of Liability</h2>
           <p>
-            LexusMail is provided on an "AS IS" and "AS AVAILABLE" basis. While our cloud architecture employs redundant Google Drive API endpoints and PostgreSQL integrity checks, we do not guarantee uninterrupted availability. In no event shall LexusMail be liable for indirect, incidental, or consequential damages resulting from data loss or transfer delays.
+            Lexus ICD is provided on an "AS IS" and "AS AVAILABLE" basis. While our cloud architecture employs redundant Google Drive API endpoints and PostgreSQL integrity checks, we do not guarantee uninterrupted availability. In no event shall Lexus ICD be liable for indirect, incidental, or consequential damages resulting from data loss or transfer delays.
           </p>
         </section>
       </div>

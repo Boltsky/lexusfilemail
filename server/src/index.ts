@@ -111,7 +111,7 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 function startServer() {
   const server = app.listen(config.port, '0.0.0.0', () => {
     console.log(`\n========================================================`);
-    console.log(`  🚀 LexusMail Server running on port ${config.port}`);
+    console.log(`  🚀 Lexus ICD Server running on port ${config.port}`);
     console.log(`  🌐 Public App URL: ${config.appUrl}`);
     console.log(`  📚 API Documentation: http://localhost:${config.port}/api/docs`);
     console.log(`  ❤️  Health Check: http://localhost:${config.port}/health`);

@@ -36,11 +36,15 @@ export const LoginPage: React.FC = () => {
     <div className="max-w-md mx-auto px-4 py-16 sm:py-24">
       <div className="bg-white rounded-3xl shadow-luxury border border-slate-200/80 p-8 sm:p-10 space-y-6">
         <div className="text-center space-y-2">
-          <div className="w-12 h-12 rounded-2xl bg-brand-50 text-brand-600 mx-auto flex items-center justify-center">
-            <LogIn className="w-6 h-6" />
-          </div>
+          <Link to="/" className="inline-block mx-auto mb-2">
+            <img
+              src="/lexus-icd-logo.png"
+              alt="Lexus ICD"
+              className="h-10 w-auto object-contain mx-auto"
+            />
+          </Link>
           <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Welcome Back</h1>
-          <p className="text-xs text-slate-500">Sign in to manage your large file transfers</p>
+          <p className="text-xs text-slate-500">Sign in to your Lexus ICD account</p>
         </div>
 
         {errorMsg && (

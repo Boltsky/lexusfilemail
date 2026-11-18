@@ -35,18 +35,15 @@ export const Navbar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Brand Logo */}
-          <Link to="/" className="flex items-center gap-2.5 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-700 via-brand-600 to-sky-400 flex items-center justify-center text-white shadow-md shadow-brand-500/20 group-hover:scale-105 transition-transform">
-              <Send className="w-5 h-5 -rotate-12 translate-x-0.5" />
-            </div>
-            <div>
-              <span className="text-xl font-bold tracking-tight text-slate-900 group-hover:text-brand-600 transition-colors">
-                Lexus<span className="text-brand-600">Mail</span>
-              </span>
-              <span className="hidden sm:inline-block ml-2 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full border border-slate-200/60">
-                Enterprise Cloud
-              </span>
-            </div>
+          <Link to="/" className="flex items-center gap-3 group">
+            <img
+              src="/lexus-icd-logo.png"
+              alt="Lexus ICD"
+              className="h-10 sm:h-11 w-auto object-contain transition-transform group-hover:scale-105"
+            />
+            <span className="hidden sm:inline-block text-[10px] font-semibold uppercase tracking-wider px-2.5 py-0.5 bg-slate-100 text-slate-700 rounded-full border border-slate-200/80">
+              Cloud Transfer
+            </span>
           </Link>
 
           {/* Desktop Navigation Links */}

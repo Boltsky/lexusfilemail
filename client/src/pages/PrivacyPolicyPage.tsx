@@ -19,7 +19,7 @@ export const PrivacyPolicyPage: React.FC = () => {
         <section className="space-y-2">
           <h2 className="text-base font-bold text-slate-900">1. Information We Collect</h2>
           <p>
-            LexusMail collects essential technical information necessary to orchestrate secure large file transfers. When creating a transfer, we collect the sender’s email address, recipient email addresses (for email transfers), filenames, file sizes, and MIME types. We do not inspect, monetize, or index the contents of your files.
+            Lexus ICD collects essential technical information necessary to orchestrate secure large file transfers. When creating a transfer, we collect the sender’s email address, recipient email addresses (for email transfers), filenames, file sizes, and MIME types. We do not inspect, monetize, or index the contents of your files.
           </p>
         </section>
 
@@ -47,7 +47,7 @@ export const PrivacyPolicyPage: React.FC = () => {
         <section className="space-y-2">
           <h2 className="text-base font-bold text-slate-900">5. Recipient Access Logs</h2>
           <p>
-            To provide delivery confirmation and protect against unauthorized access, LexusMail logs recipient download activity, including timestamp, download format (single file vs ZIP archive), and IP address. Senders can inspect these logs in their user dashboard.
+            To provide delivery confirmation and protect against unauthorized access, Lexus ICD logs recipient download activity, including timestamp, download format (single file vs ZIP archive), and IP address. Senders can inspect these logs in their user dashboard.
           </p>
         </section>
       </div>
