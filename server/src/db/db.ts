@@ -22,14 +22,21 @@ class DatabaseAdapter implements IDatabase {
   constructor() {
     if (config.databaseUrl && (config.databaseUrl.startsWith('postgres://') || config.databaseUrl.startsWith('postgresql://'))) {
       this.isPostgres = true;
+      let sslConfig: any = undefined;
+      // Internal Render hostnames (dpg-xxx without domain) do not use SSL
+      const isInternalRenderHost = config.databaseUrl.includes('dpg-') && !config.databaseUrl.includes('.render.com');
+      if (config.databaseSsl && !isInternalRenderHost) {
+        sslConfig = { rejectUnauthorized: false };
+      }
+
       this.pgPool = new Pool({
         connectionString: config.databaseUrl,
-        ssl: config.databaseSsl ? { rejectUnauthorized: false } : undefined,
+        ssl: sslConfig,
         max: 20,
         idleTimeoutMillis: 30000,
         connectionTimeoutMillis: 5000,
       });
-      console.log('[Database] Connecting to PostgreSQL at Render/remote host');
+      console.log(`[Database] Connecting to PostgreSQL (SSL: ${Boolean(sslConfig)})...`);
     } else {
       this.isPostgres = false;
       const dbDir = path.resolve(process.cwd(), 'data');

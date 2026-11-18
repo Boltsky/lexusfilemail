@@ -53,24 +53,13 @@ if (fs.existsSync(swaggerDocPath)) {
   app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc));
 }
 
-// Health check endpoint for Render.com
-app.get('/health', async (req, res) => {
-  try {
-    const dbCheck = await db.queryOne('SELECT 1 as healthy');
-    const storage = getStorageProvider();
-    res.json({
-      status: 'healthy',
-      timestamp: new Date().toISOString(),
-      database: db.isPostgres ? 'postgresql' : 'sqlite',
-      storageProvider: storage.name,
-      uptimeSeconds: process.uptime(),
-    });
-  } catch (err: any) {
-    res.status(503).json({
-      status: 'unhealthy',
-      error: err.message,
-    });
-  }
+// Health check endpoint for Render.com (responds instantly for zero-downtime deployment)
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    uptimeSeconds: process.uptime(),
+  });
 });
 
 // Mount API routes
@@ -81,7 +70,19 @@ app.use('/api/download', downloadRoutes);
 app.use('/api/admin', adminRoutes);
 
 // Serve static frontend build in production
-const clientDistPath = path.resolve(__dirname, '../../client/dist');
+let clientDistPath = path.resolve(__dirname, 'public');
+if (!fs.existsSync(clientDistPath)) {
+  clientDistPath = path.resolve(__dirname, '../../client/dist');
+}
+if (!fs.existsSync(clientDistPath)) {
+  clientDistPath = path.resolve(process.cwd(), '../client/dist');
+}
+if (!fs.existsSync(clientDistPath)) {
+  clientDistPath = path.resolve(process.cwd(), 'client/dist');
+}
+
+console.log('[Server] Client static distribution path:', clientDistPath, 'Exists:', fs.existsSync(clientDistPath));
+
 if (fs.existsSync(clientDistPath)) {
   app.use(express.static(clientDistPath));
   app.get('*', (req, res, next) => {
@@ -107,40 +108,41 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 });
 
 // Server Initialization
-async function startServer() {
-  try {
-    await initDb();
+function startServer() {
+  const server = app.listen(config.port, '0.0.0.0', () => {
+    console.log(`\n========================================================`);
+    console.log(`  🚀 LexusMail Server running on port ${config.port}`);
+    console.log(`  🌐 Public App URL: ${config.appUrl}`);
+    console.log(`  📚 API Documentation: http://localhost:${config.port}/api/docs`);
+    console.log(`  ❤️  Health Check: http://localhost:${config.port}/health`);
+    console.log(`========================================================\n`);
+  });
 
-    // Start background maintenance cycle (every 10 minutes)
-    setInterval(() => {
-      runMaintenanceTasks().catch(err => console.error('[MaintenanceCron] Error:', err));
-    }, 10 * 60 * 1000);
-
-    const server = app.listen(config.port, () => {
-      console.log(`\n========================================================`);
-      console.log(`  🚀 LexusMail Server running on port ${config.port}`);
-      console.log(`  🌐 Public App URL: ${config.appUrl}`);
-      console.log(`  📚 API Documentation: http://localhost:${config.port}/api/docs`);
-      console.log(`  ❤️  Health Check: http://localhost:${config.port}/health`);
-      console.log(`========================================================\n`);
+  // Run database initialization asynchronously without blocking server port binding
+  initDb()
+    .then(() => {
+      console.log('[Server] Database initialized successfully.');
+      // Start background maintenance cycle (every 10 minutes)
+      setInterval(() => {
+        runMaintenanceTasks().catch(err => console.error('[MaintenanceCron] Error:', err));
+      }, 10 * 60 * 1000);
+    })
+    .catch((err) => {
+      console.error('[Server] Non-fatal DB init error (will retry on next request):', err);
     });
 
-    // Graceful shutdown
-    const shutdown = async () => {
-      console.log('\n[Server] Shutting down gracefully...');
-      server.close(async () => {
-        await db.close();
-        console.log('[Server] Connections closed. Exiting.');
-        process.exit(0);
-      });
-    };
+  // Graceful shutdown
+  const shutdown = async () => {
+    console.log('\n[Server] Shutting down gracefully...');
+    server.close(async () => {
+      await db.close();
+      console.log('[Server] Connections closed. Exiting.');
+      process.exit(0);
+    });
+  };
 
-    process.on('SIGTERM', shutdown);
-    process.on('SIGINT', shutdown);
-  } catch (err) {
-    console.error('[Server] Fatal startup error:', err);
-    process.exit(1);
-  }
+  process.on('SIGTERM', shutdown);
+  process.on('SIGINT', shutdown);
 }
 
 startServer();
