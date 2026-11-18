@@ -10,6 +10,7 @@ import { config } from './config/index.js';
 import { db, initDb } from './db/db.js';
 import { getStorageProvider } from './services/storage/index.js';
 import { runMaintenanceTasks } from './worker/worker.js';
+import { startKeepAliveJob, stopKeepAliveJob } from './services/keepAlive.js';
 
 import authRoutes from './routes/authRoutes.js';
 import transferRoutes from './routes/transferRoutes.js';
@@ -116,6 +117,9 @@ function startServer() {
     console.log(`  📚 API Documentation: http://localhost:${config.port}/api/docs`);
     console.log(`  ❤️  Health Check: http://localhost:${config.port}/health`);
     console.log(`========================================================\n`);
+
+    // Start automated keep-alive pings to prevent free-tier inactivity sleep
+    startKeepAliveJob(10 * 60 * 1000);
   });
 
   // Run database initialization asynchronously without blocking server port binding
@@ -134,6 +138,7 @@ function startServer() {
   // Graceful shutdown
   const shutdown = async () => {
     console.log('\n[Server] Shutting down gracefully...');
+    stopKeepAliveJob();
     server.close(async () => {
       await db.close();
       console.log('[Server] Connections closed. Exiting.');

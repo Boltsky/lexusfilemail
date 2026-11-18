@@ -1,0 +1,25 @@
+name: Lexus ICD Keep Alive Cron Job
+
+on:
+  schedule:
+    # Runs every 10 minutes to prevent Render free-tier instance from sleeping (15 min inactivity timeout)
+    - cron: '*/10 * * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub Actions tab
+
+jobs:
+  ping-service:
+    name: Ping Lexus ICD Health Endpoint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Web Service Health
+        run: |
+          echo "Sending keep-alive ping to https://lexusfilemail.onrender.com/health at $(date -u)"
+          HTTP_STATUS=$(curl -s -o response.json -w "%{http_code}" https://lexusfilemail.onrender.com/health)
+          echo "HTTP Status Code: $HTTP_STATUS"
+          echo "Response Body:"
+          cat response.json
+          if [ "$HTTP_STATUS" -ne 200 ]; then
+            echo "Warning: Received HTTP $HTTP_STATUS"
+            exit 1
+          fi
+          echo "Keep-alive ping successful. Service is active and warm."
