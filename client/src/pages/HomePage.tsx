@@ -28,18 +28,18 @@ export const HomePage: React.FC = () => {
             <div className="lg:col-span-6 space-y-6 text-center lg:text-left">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-50 border border-brand-200/70 text-brand-700 text-xs font-semibold shadow-sm">
                 <span className="w-2 h-2 rounded-full bg-brand-600 animate-ping"></span>
-                Next-Gen Large File Transfer
+                Temporary Cloud File Storage & Sharing
               </div>
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.12]">
-                Send Huge Files. <br />
+                Upload Files. <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 via-sky-500 to-brand-800">
-                  Fast, Secure & Simple.
+                  Get a Shareable Link.
                 </span>
               </h1>
 
               <p className="text-base sm:text-lg text-slate-600 max-w-xl mx-auto lg:mx-0 leading-relaxed font-normal">
-                Share files up to 250 GB with anyone in the world. No complicated compression, no recipient software required. Powered by resilient Google Drive cloud infrastructure.
+                Temporary high-speed file storage. Drop your files, stream them securely to Google Drive, and get a direct download link to share anywhere. No account required.
               </p>
 
               {/* Value Highlights */}

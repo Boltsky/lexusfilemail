@@ -32,8 +32,8 @@ interface RawSelectedFile {
 export const TransferCard: React.FC = () => {
   const { user } = useAuth();
 
-  // Mode: 'email' | 'link'
-  const [transferMode, setTransferMode] = useState<'email' | 'link'>('email');
+  // Mode: 'link' | 'email' (default to link for instant shareable link generation)
+  const [transferMode, setTransferMode] = useState<'link' | 'email'>('link');
 
   // Files
   const [selectedFiles, setSelectedFiles] = useState<RawSelectedFile[]>([]);
@@ -139,13 +139,13 @@ export const TransferCard: React.FC = () => {
       return;
     }
 
-    if (!senderEmail || !senderEmail.includes('@')) {
-      setErrorMsg('Please provide a valid sender email address.');
-      return;
-    }
-
     let parsedRecipients: string[] = [];
     if (transferMode === 'email') {
+      if (!senderEmail || !senderEmail.includes('@')) {
+        setErrorMsg('Please provide your sender email address so recipients know who sent the files.');
+        return;
+      }
+
       parsedRecipients = recipientEmails
         .split(/[,;\s]+/)
         .map((e) => e.trim())
@@ -175,7 +175,7 @@ export const TransferCard: React.FC = () => {
       // Step 1: Initialize transfer on backend
       const payload = {
         type: transferMode,
-        senderEmail: senderEmail.trim(),
+        senderEmail: senderEmail.trim() || user?.email || 'guest@lexusmail.com',
         recipientEmails: parsedRecipients,
         title: title.trim() || undefined,
         message: message.trim() || undefined,
@@ -231,6 +231,18 @@ export const TransferCard: React.FC = () => {
         <div className="flex border-b border-slate-200/80 bg-slate-50/70 p-1.5">
           <button
             type="button"
+            onClick={() => setTransferMode('link')}
+            className={`flex-1 py-3 px-4 rounded-2xl flex items-center justify-center gap-2 text-sm font-semibold transition-all ${
+              transferMode === 'link'
+                ? 'bg-white text-brand-700 shadow-sm border border-slate-200/60'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/60'
+            }`}
+          >
+            <LinkIcon className="w-4 h-4 text-brand-600" />
+            Get Shareable Link
+          </button>
+          <button
+            type="button"
             onClick={() => setTransferMode('email')}
             className={`flex-1 py-3 px-4 rounded-2xl flex items-center justify-center gap-2 text-sm font-semibold transition-all ${
               transferMode === 'email'
@@ -240,18 +252,6 @@ export const TransferCard: React.FC = () => {
           >
             <Mail className="w-4 h-4 text-brand-600" />
             Send as Email
-          </button>
-          <button
-            type="button"
-            onClick={() => setTransferMode('link')}
-            className={`flex-1 py-3 px-4 rounded-2xl flex items-center justify-center gap-2 text-sm font-semibold transition-all ${
-              transferMode === 'link'
-                ? 'bg-white text-brand-700 shadow-sm border border-slate-200/60'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/60'
-            }`}
-          >
-            <LinkIcon className="w-4 h-4 text-brand-600" />
-            Send as Link
           </button>
         </div>
 
@@ -380,35 +380,50 @@ export const TransferCard: React.FC = () => {
 
           {/* Input Fields */}
           <div className="space-y-4">
-            {transferMode === 'email' && (
+            {transferMode === 'email' ? (
+              <>
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">
+                    To (Recipient Emails) <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="client@company.com, colleague@work.com"
+                    value={recipientEmails}
+                    onChange={(e) => setRecipientEmails(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent text-sm bg-slate-50/30 text-slate-900 transition-all placeholder:text-slate-400"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">
+                    From (Your Email) <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    placeholder="you@domain.com"
+                    value={senderEmail}
+                    onChange={(e) => setSenderEmail(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent text-sm bg-slate-50/30 text-slate-900 transition-all placeholder:text-slate-400"
+                  />
+                </div>
+              </>
+            ) : (
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">
-                  To (Recipient Emails) <span className="text-rose-500">*</span>
+                  Your Email (Optional)
                 </label>
                 <input
-                  type="text"
-                  required
-                  placeholder="client@company.com, colleague@work.com"
-                  value={recipientEmails}
-                  onChange={(e) => setRecipientEmails(e.target.value)}
+                  type="email"
+                  placeholder="name@domain.com (optional, for notifications)"
+                  value={senderEmail}
+                  onChange={(e) => setSenderEmail(e.target.value)}
                   className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent text-sm bg-slate-50/30 text-slate-900 transition-all placeholder:text-slate-400"
                 />
               </div>
             )}
-
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">
-                From (Your Email) <span className="text-rose-500">*</span>
-              </label>
-              <input
-                type="email"
-                required
-                placeholder="you@domain.com"
-                value={senderEmail}
-                onChange={(e) => setSenderEmail(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent text-sm bg-slate-50/30 text-slate-900 transition-all placeholder:text-slate-400"
-              />
-            </div>
 
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">
@@ -544,12 +559,12 @@ export const TransferCard: React.FC = () => {
             ) : transferMode === 'email' ? (
               <>
                 <Mail className="w-5 h-5" />
-                <span>Send Files Now</span>
+                <span>Send Files via Email</span>
               </>
             ) : (
               <>
                 <LinkIcon className="w-5 h-5" />
-                <span>Get Shareable Link</span>
+                <span>Upload & Get Shareable Link</span>
               </>
             )}
           </button>
