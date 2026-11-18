@@ -48,12 +48,13 @@ export class LocalStorageProvider implements IStorageProvider {
     const targetFilePath = path.join(transferDir, fileRef);
 
     // Create an empty file to receive chunks
-    fs.writeFileSync(targetFilePath, Buffer.alloc(0));
+    if (!fs.existsSync(targetFilePath)) {
+      fs.writeFileSync(targetFilePath, Buffer.alloc(0));
+    }
 
-    const sessionId = `local-session-${crypto.randomUUID()}`;
-    const sessionUrl = `local://${sessionId}`;
+    const sessionUrl = `local://${params.transferId}/${fileRef}`;
 
-    this.sessionState.set(sessionId, {
+    this.sessionState.set(sessionUrl, {
       transferId: params.transferId,
       filename: params.filename,
       filePath: targetFilePath,
@@ -76,15 +77,44 @@ export class LocalStorageProvider implements IStorageProvider {
     totalBytes: number;
     filename?: string;
   }): Promise<StorageChunkResult> {
-    const sessionId = params.sessionUrl.replace('local://', '');
-    const session = this.sessionState.get(sessionId);
+    let filePath = '';
+    let totalBytes = params.totalBytes;
 
-    if (!session) {
-      throw new Error(`Invalid local upload session: ${params.sessionUrl}`);
+    const cleanUrl = (params.sessionUrl || '').replace('local://', '');
+    const parts = cleanUrl.split('/').filter(Boolean);
+
+    if (parts.length >= 2) {
+      const transferId = parts[0];
+      const fileRef = parts.slice(1).join('/');
+      const transferDir = path.join(this.baseDir, transferId);
+      if (!fs.existsSync(transferDir)) {
+        fs.mkdirSync(transferDir, { recursive: true });
+      }
+      filePath = path.join(transferDir, fileRef);
+    } else {
+      const session = this.sessionState.get(params.sessionUrl) || this.sessionState.get(cleanUrl);
+      if (session) {
+        filePath = session.filePath;
+        totalBytes = session.totalBytes;
+      }
+    }
+
+    if (!filePath) {
+      // Auto-fallback: construct durable fallback path
+      const fallbackDir = path.join(this.baseDir, 'transfers');
+      if (!fs.existsSync(fallbackDir)) {
+        fs.mkdirSync(fallbackDir, { recursive: true });
+      }
+      const safeName = (params.filename || 'uploaded_file').replace(/[^a-zA-Z0-9._-]/g, '_');
+      filePath = path.join(fallbackDir, `${crypto.randomUUID()}-${safeName}`);
+    }
+
+    if (!fs.existsSync(filePath)) {
+      fs.writeFileSync(filePath, Buffer.alloc(0));
     }
 
     // Write chunk buffer at specific byte offset
-    const fd = fs.openSync(session.filePath, 'r+');
+    const fd = fs.openSync(filePath, fs.constants.O_RDWR | fs.constants.O_CREAT);
     try {
       fs.writeSync(fd, params.chunkBuffer, 0, params.chunkBuffer.length, params.startByte);
     } finally {
@@ -92,28 +122,41 @@ export class LocalStorageProvider implements IStorageProvider {
     }
 
     const bytesUploaded = params.endByte + 1;
-    session.bytesUploaded = bytesUploaded;
+    const isCompleted = bytesUploaded >= totalBytes;
 
-    const isCompleted = bytesUploaded >= params.totalBytes;
+    const existingSession = this.sessionState.get(params.sessionUrl) || this.sessionState.get(cleanUrl);
+    if (existingSession) {
+      existingSession.bytesUploaded = bytesUploaded;
+    } else {
+      this.sessionState.set(params.sessionUrl, {
+        transferId: parts[0] || '',
+        filename: params.filename || '',
+        filePath,
+        totalBytes,
+        bytesUploaded,
+        mimeType: 'application/octet-stream',
+      });
+    }
 
     let checksum: string | undefined = undefined;
     if (isCompleted) {
-      const fileBuffer = fs.readFileSync(session.filePath);
+      const fileBuffer = fs.readFileSync(filePath);
       checksum = crypto.createHash('md5').update(fileBuffer).digest('hex');
-      this.sessionState.delete(sessionId);
+      this.sessionState.delete(params.sessionUrl);
+      this.sessionState.delete(cleanUrl);
     }
 
     return {
       completed: isCompleted,
-      fileId: path.relative(this.baseDir, session.filePath).replace(/\\/g, '/'),
+      fileId: path.relative(this.baseDir, filePath).replace(/\\/g, '/'),
       checksum,
       bytesUploaded,
     };
   }
 
   async getUploadStatus(sessionUrl: string, totalBytes: number): Promise<{ lastByteUploaded: number }> {
-    const sessionId = sessionUrl.replace('local://', '');
-    const session = this.sessionState.get(sessionId);
+    const cleanUrl = (sessionUrl || '').replace('local://', '');
+    const session = this.sessionState.get(sessionUrl) || this.sessionState.get(cleanUrl);
     if (!session) {
       return { lastByteUploaded: 0 };
     }

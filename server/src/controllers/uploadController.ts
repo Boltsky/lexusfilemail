@@ -101,8 +101,24 @@ export class UploadController {
       }
 
       const storage = getStorageProvider();
+      let activeSessionUrl = session.session_url;
+
+      if (!activeSessionUrl || !activeSessionUrl.trim()) {
+        const initResult = await storage.initUpload({
+          filename: session.filename,
+          mimeType: session.mime_type,
+          size: totalBytes,
+          transferId: session.transfer_id,
+        });
+        activeSessionUrl = initResult.sessionUrl;
+        await db.execute(
+          'UPDATE upload_sessions SET session_url = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2',
+          [activeSessionUrl, sessionId]
+        );
+      }
+
       const chunkResult = await storage.uploadChunk({
-        sessionUrl: session.session_url,
+        sessionUrl: activeSessionUrl,
         chunkBuffer,
         startByte,
         endByte,

@@ -141,6 +141,21 @@ export class TransferController {
         const fileId = crypto.randomUUID();
         const sessionId = crypto.randomUUID();
 
+        // Initialize storage session for this file (Google Drive resumable or Local durable)
+        let initialSessionUrl = '';
+        try {
+          const storage = getStorageProvider();
+          const initRes = await storage.initUpload({
+            filename: f.filename,
+            mimeType: f.mimeType,
+            size: f.size,
+            transferId,
+          });
+          initialSessionUrl = initRes.sessionUrl;
+        } catch (storageInitErr: any) {
+          console.warn('[initTransfer] Auto initUpload warning:', storageInitErr.message);
+        }
+
         await db.execute(
           `INSERT INTO transfer_files (
             id, transfer_id, original_filename, mime_type, file_size_bytes, status
@@ -151,8 +166,8 @@ export class TransferController {
         await db.execute(
           `INSERT INTO upload_sessions (
             id, transfer_id, file_index, filename, file_size_bytes, mime_type, session_url, bytes_uploaded, is_completed
-          ) VALUES ($1, $2, $3, $4, $5, $6, '', 0, $7)`,
-          [sessionId, transferId, i, f.filename, f.size, f.mimeType, db.isPostgres ? false : 0]
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, 0, $8)`,
+          [sessionId, transferId, i, f.filename, f.size, f.mimeType, initialSessionUrl, db.isPostgres ? false : 0]
         );
 
         createdFiles.push({
