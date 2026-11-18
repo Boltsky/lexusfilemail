@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { LogIn, Mail, Lock, AlertCircle, ArrowRight, ShieldCheck, Sparkles } from 'lucide-react';
+import { LogIn, Mail, Lock, AlertCircle, ArrowRight, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.js';
 
 export const LoginPage: React.FC = () => {
@@ -25,11 +25,6 @@ export const LoginPage: React.FC = () => {
     } else {
       setErrorMsg(res.error || 'Invalid credentials');
     }
-  };
-
-  const fillAdminCredentials = () => {
-    setEmail('admin@lexusmail.com');
-    setPassword('LexusAdmin2026!');
   };
 
   return (
@@ -109,18 +104,6 @@ export const LoginPage: React.FC = () => {
             )}
           </button>
         </form>
-
-        {/* Quick Admin Credential Helper */}
-        <div className="pt-2 border-t border-slate-100 text-center">
-          <button
-            type="button"
-            onClick={fillAdminCredentials}
-            className="text-[11px] text-brand-600 hover:text-brand-800 font-medium inline-flex items-center gap-1 bg-brand-50 hover:bg-brand-100/70 px-3 py-1.5 rounded-lg transition-colors"
-          >
-            <Sparkles className="w-3 h-3" />
-            Fill Admin Credentials (Demo)
-          </button>
-        </div>
 
         <div className="text-center text-xs text-slate-500">
           Don't have an account yet?{' '}
